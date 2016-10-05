@@ -1,0 +1,33 @@
+version: '2'
+services:
+  php-fpm:
+    build: ./docker/php-fpm
+    volumes:
+      - ./src:/var/www
+    links:
+      - database
+      - redis
+  server:
+    image: nginx
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    links:
+      - php-fpm
+    volumes_from:
+      - php-fpm
+  database:
+    image: postgres
+    environment:
+      POSTGRES_DB: dbname
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpassword
+#  database:
+#    image: mysql
+#    environment:
+#      MYSQL_DATABASE: dbname
+#      MYSQL_USER: dbuser
+#      MYSQL_PASSWORD: dbpassword
+  redis:
+    image: redis
